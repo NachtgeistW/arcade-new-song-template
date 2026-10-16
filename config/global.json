@@ -1,0 +1,46 @@
+{
+  "workDir": "%USERPROFILE%\\Videos\\街机音游月度新曲回顾-工作区",
+  "fps": 60,
+  "width": 1920,
+  "height": 1080,
+  "theme": "editorial",
+  "title": "街机音游新曲回顾",
+  "notice": [
+    "注意：",
+    "",
+    "在本视频中，可能会出现下列情况：",
+    "遗漏、信息错误、手滑打错、画质低下、音质低下等。",
+    "",
+    "内容均来自各游戏官方公告。",
+    "信息仅供参考，并不代表up主立场。",
+    "",
+    "本期收录的时间范围为{year}年{month}月实装的曲目。",
+    "于本月宣布但实装日期在下个月的曲目将在视频末尾额外列出。",
+    "仅追加新谱的曲目不在收录范围内。"
+  ],
+  "categories": [
+    { "key": "POPS", "label": "流行音乐 (POPS)" },
+    { "key": "CLASSICAL", "label": "古典音乐 (CLASSICAL)" },
+    { "key": "ANIME", "label": "动漫 (ANIME)" },
+    { "key": "GAMES", "label": "游戏 (GAMES)" },
+    { "key": "TOUHOU", "label": "东方 (TOUHOU)" },
+    { "key": "VOCALOID", "label": "VOCALOID" },
+    { "key": "VIRTUAL", "label": "虚拟主播 (VIRTUAL)" },
+    { "key": "ORIGINAL", "label": "原创 (ORIGINAL)" },
+    { "key": "VARIETY", "label": "其他 (VARIETY)" }
+  ],
+  "credits": [
+    { "heading": "转场声源", "lines": ["双叶凑音 VoiSona"] },
+    { "heading": "", "lines": ["Made with Remotion"] }
+  ],
+  "sectionSfx": null,
+  "transitionFrames": 15,
+  "audio": {
+    "loudnorm": true,
+    "fadeInSec": 0.3,
+    "fadeOutSec": 0.8
+  },
+  "ytdlp": {
+    "args": []
+  }
+}
