@@ -9,7 +9,8 @@
     "stills": "tsx scripts/render.ts --stills",
     "previews": "tsx scripts/render.ts --previews",
     "render": "tsx scripts/render.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:games": "node --import tsx --test scripts/tests/games.test.ts"
   },
   "dependencies": {
     "@remotion/bundler": "^4.0.534",

@@ -16,7 +16,9 @@
    ```
    npm run prepare-month -- YYYY-MM --check
    ```
-   输出「表格检查通过：N 首」即合格；否则会逐条列出「第 X 行「列名」：问题」，按提示修正后重跑。
+   输出「表格检查通过：N 首」表示结构和可校验字段通过；否则会逐条列出「第 X 行「列名」：问题」，按提示修正后重跑。
+
+`--check` 不会核实外部链接是否可访问、公告真实性、实装日期是否属于目标月份，也不会探测素材时长或自动去重；这些需要另外核实。空「曲目」表会被拒绝：若本月确实无新曲，应如实报告，不能添加占位曲目来让校验通过。
 
 ## 1. 依据的配置文件（以文件内容为准，不要凭记忆）
 
@@ -27,6 +29,24 @@
 | `src/types.ts` → `THEMES` | 「设置」表「版式」的可选值。 |
 
 建议「游戏」列一律填 `games.json` 的 `name` 原文（与下拉菜单一致）。
+
+### 系列名、兼容别名与地区映射
+
+- 下拉菜单和默认分段使用不带版本副标题的系列名，例如 `SOUND VOLTEX`、`jubeat`、`GITADORA`、`maimai でらっくす`、`CHUNITHM`。已有表格中的旧完整名称（例如 `SOUND VOLTEX EXCEED GEAR`、`jubeat beyond the Ave.`、`GITADORA GALAXY WAVE`、`CHUNITHM VERSE`）仍作为别名接受；其他原有别名也保留。填写过的自定义「分段」不会被改写。
+- 新增/明确的映射如下（完整别名始终以 `config/games.json` 为准）：
+
+  | 系列 / 范围 | 推荐「游戏」值 | `id` | 常用别名 |
+  | --- | --- | --- | --- |
+  | DANCERUSH STARDOM | `DANCERUSH STARDOM` | `dancerush` | `DANCERUSH`、`DRS` |
+  | DANCE aROUND | `DANCE aROUND` | `dancearound` | `DANCEAROUND`、`DaR` |
+  | REFLEC BEAT | `REFLEC BEAT` | `reflec` | `REFLEC`、`RB` |
+  | 中国大陆音乐魔方 | `音乐魔方` | `jubeat-cn` | `jubeat音乐魔方`、`jubeat 音乐魔方`、`jubeat CN` |
+  | GuitarFreaks / DrumMania 共用 | `GITADORA` | `gitadora` | `GuitarFreaks`、`DrumMania`、`吉他`、`鼓` |
+
+- **GuitarFreaks 与 DrumMania 共用一个 GITADORA 条目。** 同一次同步更新中的同一首曲目只写一行，不因吉他/鼓两种机台重复写两行。两种别名都会解析到 `gitadora`；但解析器不会自动删除重复曲目行，填写/汇总时须去重。活动「参与机种」也只需填写一次 `GITADORA`。
+- **音乐魔方（中国大陆）与 `jubeat` 分开记录。** `jubeat` 保留原来的映射；不要把日本版/其他地区的实装日期或曲库变化自动算作大陆更新。大陆条目按本地发行方归在 `华立科技`，参见[华立科技 2026-001 投资者关系活动记录](https://pdf.dfcfw.com/pdf/H2_AN202601201818165857_1.pdf)。
+- 配置当前包含 17 个普通机种条目和 2 个多机种活动条目；吉他/鼓共享一项。新增四项暂设 `logo: null`。现有 logo 素材保持原样，图片上可能仍含旧版本文字；系列名调整不会自动重绘图片。
+- 配置更新后新生成的模板会使用新下拉列表。旧工作簿仍可通过别名校验，但其隐藏 `_lists` 不会自动刷新；需要新下拉项时请另行生成新模板，再迁移原表内容并校验，不要覆盖原文件。
 
 ## 2. 工作表
 
@@ -47,9 +67,9 @@
 | 列名 | 必填 | 格式 / 规则 |
 | --- | --- | --- |
 | 序号 | 否 | 正整数，决定播放顺序。留空的行排在有序号的行之后，按表格行顺序。 |
-| 分段 | 否 | 分段标题卡上的文字，多行用 `\|` 或换行分隔，例如 `jubeat\|beyond the Ave.`。留空则用该游戏在 `games.json` 的 `section`。**一般留空。** |
+| 分段 | 否 | 分段标题卡上的文字，多行用 `\|` 或换行分隔，例如 `jubeat\|特别收录`。留空则用该游戏在 `games.json` 的 `section`。**一般留空。** |
 | 游戏 | 是 | 见第 1 节。普通机种填机种名；多机种活动填活动条目（如 `BEMANI多机种活动`、`SEGA多机种活动`）。 |
-| 参与机种 | 条件 | **「游戏」是多机种活动时必填，否则必须留空。** 多个机种用 `\|` 或换行分隔，例如 `jubeat\|DanceDanceRevolution WORLD\|SOUND VOLTEX EXCEED GEAR`。每一项都必须是 `games.json` 里的普通机种（不能是活动条目），重复项会被去重。 |
+| 参与机种 | 条件 | **「游戏」是多机种活动时必填，否则必须留空。** 多个机种用 `\|` 或换行分隔，例如 `jubeat\|DanceDanceRevolution\|SOUND VOLTEX`。每一项都必须是 `games.json` 里的普通机种（不能是活动条目），重复项会被去重。 |
 | 曲名 | 是 | 照官方写法。 |
 | 作曲者 | 否 | 照官方名义写法。 |
 | 曲目类型 | 否 | 自由文本，显示在信息卡上，如 `本社原创` / `原创` / `VARIETY` / `版权`。 |
@@ -102,11 +122,11 @@ A 列 = 项目，B 列 = 内容，C 列 = 说明（不读取）。第 1 行是�
 
 | 序号 | 分段 | 游戏 | 参与机种 | 曲名 | 作曲者 | 曲目类型 | 统计分类 | 实装日期 | 解锁方式 | 视频链接 | 封面 | 音源 | 选段开始 | 选段结束 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | | BEMANI多机种活动 | jubeat\|DanceDanceRevolution WORLD | ロマンシングエスケープ | ここなつ2.0 | 本社原创 | ORIGINAL | 2025/2/14 | ひなビタちくわまつり2025活动默认解锁 | romancing_escape.mp4 | | | 0:00 | 0:12 |
-| 2 | | jubeat beyond the Ave. | | （曲名） | （作曲者） | 原创 | ORIGINAL | 2025/2/20 | 默认解锁 | https://www.bilibili.com/video/BV… | | | 0:30 | 0:42 |
-| 3 | | DanceDanceRevolution WORLD | | ムラサキグルマ | ここなつ Produced by はるなば | 本社原创 | ORIGINAL | 2025/2/14 | 购买曲包 | | murasaki.jpg | murasaki.mp3 | 0:10 | 0:20 |
-| 4 | | SEGA多机种活动 | CHUNITHM VERSE\|オンゲキ bright MEMORY | （曲名） | （作曲者） | 原创 | ORIGINAL | 2025/2/27 | 活动解锁 | https://www.youtube.com/watch?v=… | | | 0:15 | 0:27 |
-| 5 | | CHUNITHM VERSE | | Aether Crest: Celestial | void (Mournfinale) × 水野健治 | 原创 | ORIGINAL | 2025/2/27 | 活动解锁 | aether_crest.mp4 | | | 0:15 | 0:27 |
+| 1 | | BEMANI多机种活动 | jubeat\|DanceDanceRevolution | ロマンシングエスケープ | ここなつ2.0 | 本社原创 | ORIGINAL | 2025/2/14 | ひなビタちくわまつり2025活动默认解锁 | romancing_escape.mp4 | | | 0:00 | 0:12 |
+| 2 | | jubeat | | （曲名） | （作曲者） | 原创 | ORIGINAL | 2025/2/20 | 默认解锁 | https://www.bilibili.com/video/BV… | | | 0:30 | 0:42 |
+| 3 | | DanceDanceRevolution | | ムラサキグルマ | ここなつ Produced by はるなば | 本社原创 | ORIGINAL | 2025/2/14 | 购买曲包 | | murasaki.jpg | murasaki.mp3 | 0:10 | 0:20 |
+| 4 | | SEGA多机种活动 | CHUNITHM\|オンゲキ | （曲名） | （作曲者） | 原创 | ORIGINAL | 2025/2/27 | 活动解锁 | https://www.youtube.com/watch?v=… | | | 0:15 | 0:27 |
+| 5 | | CHUNITHM | | Aether Crest: Celestial | void (Mournfinale) × 水野健治 | 原创 | ORIGINAL | 2025/2/27 | 活动解锁 | aether_crest.mp4 | | | 0:15 | 0:27 |
 
 播放时会依次出现分段卡：BEMANI 多机种活动 → jubeat → DanceDanceRevolution → SEGA 多机种活动 → CHUNITHM。
 
@@ -120,3 +140,8 @@ A 列 = 项目，B 列 = 内容，C 列 = 说明（不读取）。第 1 行是�
 - [ ] 「统计分类」只用 `global.json` 里的 key。
 - [ ] 同一游戏/活动的曲目连续排列。
 - [ ] `npm run prepare-month -- YYYY-MM --check` 通过。
+
+
+## 8. 配置回归检查
+
+修改机种配置后可运行 `npm run test:games`，检查系列名和旧别名、GITADORA 共用映射、地区区分以及模板下拉菜单，并用临时测试工作簿运行生成器和 `--check`。测试数据仅保存在自动清理的临时目录中；不会写入真实月份，不下载素材、不渲染视频。
