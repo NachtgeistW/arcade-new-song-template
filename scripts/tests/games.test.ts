@@ -58,7 +58,9 @@ test('GuitarFreaks and DrumMania share GITADORA; mainland jubeat remains separat
   assert.equal(findGame(games, 'jubeat')?.id, 'jubeat');
   assert.equal(findGame(games, '音乐魔方')?.id, 'jubeat-cn');
   assert.equal(findGame(games, 'jubeat 音乐魔方')?.id, 'jubeat-cn');
-  for (const id of ['dancerush', 'dancearound', 'reflec', 'jubeat-cn']) assert.equal(findGame(games, id)?.logo, null);
+  for (const game of games) {
+    if (game.logo) assert.ok(fs.existsSync(path.join(ROOT, 'public', game.logo)), `Missing logo: ${game.name}`);
+  }
 });
 
 test('new workbook dropdowns contain canonical names and retain the template structure', () => {

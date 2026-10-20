@@ -4,6 +4,7 @@ import { FONT_JP, FONT_SC } from '../fonts';
 import { PALETTES, withAlpha } from '../palette';
 import type { MonthProps } from '../types';
 import { useEnter } from './cards/shared';
+import { FitText } from './FitText';
 
 type PageProps = { p: MonthProps };
 
@@ -33,7 +34,9 @@ export const TitlePage: React.FC<PageProps> = ({ p }) => {
       </Stagger>
       <div style={{ width: 760 * line, height: 6, background: P.accent, margin: '30px 0 36px' }} />
       <Stagger i={2}>
-        <div style={{ fontSize: 132, fontWeight: 900, letterSpacing: 10 }}>{p.title}</div>
+        <div style={{ height: 380 }}>
+          <FitText text={p.title} maxSize={132} minSize={48} multiline style={{ fontWeight: 900, letterSpacing: 10 }} />
+        </div>
       </Stagger>
       <Stagger i={4}>
         <div style={{ fontSize: 40, color: P.muted, marginTop: 30, letterSpacing: 6 }}>

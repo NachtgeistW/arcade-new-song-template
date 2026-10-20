@@ -31,6 +31,11 @@ export const FitText: React.FC<Props> = ({ text, maxSize, minSize = 12, multilin
       } else if (el.scrollWidth > b.clientWidth) {
         size = Math.max(minSize, (maxSize * b.clientWidth) / el.scrollWidth);
         el.style.fontSize = `${size}px`;
+        // Letter spacing stays fixed when the font shrinks, so recheck the result.
+        while (size > minSize && el.scrollWidth > b.clientWidth + 1) {
+          size = Math.max(minSize, size * 0.96);
+          el.style.fontSize = `${size}px`;
+        }
       }
       if (!done.current) {
         done.current = true;

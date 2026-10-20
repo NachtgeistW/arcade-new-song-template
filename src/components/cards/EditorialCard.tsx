@@ -75,7 +75,7 @@ export const EditorialCard: React.FC<CardProps> = ({ song, year, month, index, t
 
       <div style={{ position: 'absolute', left: 80, top: 890, width: 1180, opacity: title, transform: `translateY(${interpolate(title, [0, 1], [30, 0])}px)` }}>
         <div style={{ height: 110 }}>
-          <FitText text={song.title} maxSize={100} minSize={40} style={{ fontWeight: 900, letterSpacing: 2 }} />
+          <FitText text={song.title} maxSize={100} minSize={24} style={{ fontWeight: 900, letterSpacing: 2 }} />
         </div>
         <div style={{ height: 50, display: 'flex', alignItems: 'center', gap: 16, color: P.muted }}>
           <span style={{ fontStyle: 'italic', fontSize: 28 }}>by</span>

@@ -25,7 +25,11 @@ const readSongs = (ws: ExcelJS.Worksheet): RawSong[] => {
     for (const c of SONG_COLUMNS) {
       const col = header.get(c.header);
       cells[c.key] = col ? row.getCell(col).value : null;
-      text[c.key] = cellText(cells[c.key]);
+      const value = cells[c.key];
+      text[c.key] =
+        c.key === 'url' && value && typeof value === 'object' && 'hyperlink' in value
+          ? value.hyperlink.trim()
+          : cellText(value);
     }
     if (!text.title && !text.game && !text.url && !text.cover) return;
     rows.push({ row: rowNumber, cells, text });
