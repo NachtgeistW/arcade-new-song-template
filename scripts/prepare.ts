@@ -3,7 +3,7 @@ import path from 'node:path';
 import ExcelJS from 'exceljs';
 import { THEMES, type MonthProps, type PreviewGroup, type Song, type ThemeName } from '../src/types.ts';
 import { ROOT, findGame, loadGames, loadGlobal, monthPaths, parseMonthArg, type GameConfig } from './lib/config.ts';
-import { copyDirIfChanged, copyIfChanged, ensureDownloaded, extractViz, isUrl, probeDuration, trim } from './lib/media.ts';
+import { copyDirIfChanged, copyIfChanged, ensureDownloaded, extractViz, isUrl, probeDuration, probeVideoSize, trim } from './lib/media.ts';
 import { PREVIEW_SHEET, SETTINGS_SHEET, SONG_COLUMNS, SONG_SHEET, cellText, readHeaderMap, type SongColumnKey } from './lib/sheet.ts';
 import { parseDate, parseTime, splitLines } from './lib/values.ts';
 
@@ -198,7 +198,7 @@ const main = async () => {
         const video = trim({ kind: 'video', src, start: c.start, duration, loudnorm: global.audio.loudnorm, outDir: mediaDir, baseName: n });
         viz = extractViz(path.join(mediaDir, video.name));
         usedMedia.add(video.name).add(viz);
-        media = { kind: 'video', src: `media/${video.name}` };
+        media = { kind: 'video', src: `media/${video.name}`, ...probeVideoSize(path.join(mediaDir, video.name)) };
       }
     } catch (e) {
       throw new Error(`第 ${c.raw.row} 行（${t.title}）素材处理失败：${(e as Error).message}`);

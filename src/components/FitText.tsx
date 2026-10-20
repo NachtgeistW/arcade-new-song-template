@@ -17,10 +17,13 @@ export const FitText: React.FC<Props> = ({ text, maxSize, minSize = 12, multilin
 
   useLayoutEffect(() => {
     let cancelled = false;
-    document.fonts.ready.then(() => {
+    let fontsReady = false;
+    const fit = () => {
       const b = box.current;
       const el = inner.current;
-      if (cancelled || !b || !el) return;
+      if (cancelled || !fontsReady || !b || !el) return;
+      // Premounted sequences are display:none and measure as 0; refit once they become visible.
+      if (b.clientWidth === 0 || b.clientHeight === 0) return;
       let size = maxSize;
       el.style.fontSize = `${size}px`;
       if (multiline) {
@@ -37,6 +40,13 @@ export const FitText: React.FC<Props> = ({ text, maxSize, minSize = 12, multilin
           el.style.fontSize = `${size}px`;
         }
       }
+    };
+    const observer = new ResizeObserver(fit);
+    if (box.current) observer.observe(box.current);
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      fontsReady = true;
+      fit();
       if (!done.current) {
         done.current = true;
         continueRender(handle);
@@ -44,6 +54,7 @@ export const FitText: React.FC<Props> = ({ text, maxSize, minSize = 12, multilin
     });
     return () => {
       cancelled = true;
+      observer.disconnect();
     };
   }, [text, maxSize, minSize, multiline, handle]);
 

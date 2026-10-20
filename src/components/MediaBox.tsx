@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { AbsoluteFill, Audio, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import type { SongMedia } from '../types';
 
@@ -22,9 +22,27 @@ const useFadeVolume = (durationInFrames: number, fadeInSec: number, fadeOutSec: 
     });
 };
 
+const useBoxAspect = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [aspect, setAspect] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      if (el.clientWidth && el.clientHeight) setAspect(el.clientWidth / el.clientHeight);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, aspect] as const;
+};
+
 export const MediaBox: React.FC<Props> = ({ media, durationInFrames, fadeInSec, fadeOutSec, blurFill = true, style }) => {
   const frame = useCurrentFrame();
   const volume = useFadeVolume(durationInFrames, fadeInSec, fadeOutSec);
+  const [boxRef, boxAspect] = useBoxAspect();
   const blurLayer: React.CSSProperties = {
     position: 'absolute',
     inset: -60,
@@ -36,10 +54,12 @@ export const MediaBox: React.FC<Props> = ({ media, durationInFrames, fadeInSec, 
 
   if (media.kind === 'video') {
     const src = staticFile(media.src);
+    // The blurred copy is expensive to render, so drop it when the video already (nearly) fills the box.
+    const fills = !!media.width && !!media.height && !!boxAspect && Math.abs(media.width / media.height / boxAspect - 1) < 0.01;
     return (
-      <AbsoluteFill style={{ overflow: 'hidden', background: '#000', ...style }}>
-        {blurFill ? <OffthreadVideo src={src} muted style={blurLayer} /> : null}
-        <OffthreadVideo src={src} volume={volume} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'relative' }} />
+      <AbsoluteFill ref={boxRef} style={{ overflow: 'hidden', background: '#000', ...style }}>
+        {blurFill && !fills ? <OffthreadVideo src={src} muted style={blurLayer} /> : null}
+        <OffthreadVideo src={src} volume={volume} style={{ width: '100%', height: '100%', objectFit: fills ? 'cover' : 'contain', position: 'relative' }} />
       </AbsoluteFill>
     );
   }

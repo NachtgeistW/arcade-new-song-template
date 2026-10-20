@@ -14,6 +14,8 @@ const remotion = (args: string[]) => {
   if (res.status !== 0) process.exit(res.status ?? 1);
 };
 
+const chromiumOptions = { gl: 'angle' } as const;
+
 const main = async () => {
   const flags = process.argv.slice(2).filter((a) => a.startsWith('--'));
   const positional = process.argv.slice(2).filter((a) => !a.startsWith('--'));
@@ -42,12 +44,13 @@ const main = async () => {
     const serveUrl = await bundle({ entryPoint: path.join(ROOT, 'src', 'index.ts'), publicDir: paths.publicDir });
     for (const theme of themes) {
       const inputProps = { ...props, theme, songIndex };
-      const composition = await selectComposition({ serveUrl, id: 'Card', inputProps });
+      const composition = await selectComposition({ serveUrl, id: 'Card', inputProps, chromiumOptions });
       const output = path.join(dir, `${theme}.mp4`);
       await renderMedia({
         serveUrl,
         composition,
         inputProps,
+        chromiumOptions,
         codec: 'h264',
         crf: 20,
         outputLocation: output,
@@ -66,9 +69,9 @@ const main = async () => {
     console.log('打包中...');
     const serveUrl = await bundle({ entryPoint: path.join(ROOT, 'src', 'index.ts'), publicDir: paths.publicDir });
     const still = async (id: string, inputProps: Record<string, unknown>, frame: number, name: string) => {
-      const composition = await selectComposition({ serveUrl, id, inputProps });
+      const composition = await selectComposition({ serveUrl, id, inputProps, chromiumOptions });
       const output = path.join(stillsDir, name);
-      await renderStill({ serveUrl, composition, inputProps, frame: Math.min(frame, composition.durationInFrames - 1), output });
+      await renderStill({ serveUrl, composition, inputProps, chromiumOptions, frame: Math.min(frame, composition.durationInFrames - 1), output });
       console.log(`  ${name}`);
     };
     for (const theme of themes) {

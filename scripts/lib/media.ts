@@ -79,6 +79,15 @@ export const probeDuration = (file: string) => {
   return d;
 };
 
+export const probeVideoSize = (file: string) => {
+  const out = run('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', file], {
+    quiet: true,
+  });
+  const [width, height] = out.trim().split(',').map(Number);
+  if (!width || !height) throw new Error(`无法读取画面尺寸：${file}`);
+  return { width, height };
+};
+
 const hasAudio = (file: string) =>
   run('ffprobe', ['-v', 'error', '-select_streams', 'a', '-show_entries', 'stream=index', '-of', 'csv=p=0', file], {
     quiet: true,

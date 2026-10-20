@@ -2,7 +2,7 @@ export const THEMES = ['classic', 'glass', 'stage', 'select', 'editorial', 'high
 export type ThemeName = (typeof THEMES)[number];
 
 export type SongMedia =
-  | { kind: 'video'; src: string }
+  | { kind: 'video'; src: string; width?: number; height?: number }
   | { kind: 'cover'; cover: string; audio: string };
 
 export interface LogoRef {
